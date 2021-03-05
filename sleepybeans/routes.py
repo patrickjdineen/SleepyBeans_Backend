@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import json
 from datetime import datetime
-from sleepybeans.models import User, Baby
+from sleepybeans.models import User, Baby, Sleep
 from functools import wraps
 from sleepybeans.helpers import token_required
 
@@ -50,8 +50,6 @@ def login():
     return make_response('Could not verify',401,{'WWW-Authenticate': 'Basic realm="Login Required!"'})
 
 
-
-#
 #Baby Routes
 #create new baby
 @app.route('/baby', methods = ["POST"])
@@ -112,6 +110,7 @@ def del_baby(current_user_token,baby_id):
     return jsonify ({'message':'This baby has been deleted'})
 
 #update a babys attributes
+#note - different requests can change the types of updats by adding or leaving things off
 @app.route('/baby/<baby_id>', methods=['PUT'])
 @token_required
 def update_baby(current_user_token,baby_id):
@@ -123,6 +122,20 @@ def update_baby(current_user_token,baby_id):
     update_baby.birth_date=data['birth_date']
     db.session.commit()
     return jsonify({'message' : 'baby has been updated'})
+
+@app.route('/baby/<baby_id>/sleep', methods=['POST'])
+@token_required
+def new_sleep(current_user_token,baby_id):
+    data = request.get_json()
+    new_sleep = Sleep(
+        id = uuid.uuid
+        sleep_type = data['sleep_type'],
+        start_time = datetime.utcnow(),
+        child_id = baby_id
+    )
+    db.session.add(new_sleep)
+    db.session.commit()
+    return jsonify({'message':'sleep session started'})
 
 
 #Sleep Routes
