@@ -17,7 +17,7 @@ class Baby(db.Model):
     sleep = db.relationship('Sleep', backref= "baby", lazy=True)
 
 class Sleep(db.Model):
-    id = db.Column(db.String, primary_key =True)
+    id = db.Column(db.Integer, primary_key =True)
     sleep_type = db.Column(db.String(150), nullable = True)
     start_time =  db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable = True)

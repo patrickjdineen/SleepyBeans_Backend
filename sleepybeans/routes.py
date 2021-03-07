@@ -123,34 +123,50 @@ def update_baby(current_user_token,baby_id):
     db.session.commit()
     return jsonify({'message' : 'baby has been updated'})
 
+
+#Sleep Routes
+
+#start new sleep
 @app.route('/baby/<baby_id>/sleep', methods=['POST'])
 @token_required
 def new_sleep(current_user_token,baby_id):
     data = request.get_json()
     new_sleep = Sleep(
-        id = uuid.uuid
         sleep_type = data['sleep_type'],
         start_time = datetime.utcnow(),
-        child_id = baby_id
+        child_id = baby_id,
+        sleep_complete=False
     )
     db.session.add(new_sleep)
     db.session.commit()
     return jsonify({'message':'sleep session started'})
 
+#Get active sleeps for a baby
+@app.route('/baby/<baby_id>/sleep', methods = ['GET'])
+@token_required
+def show_current_sleep(current_user_token, baby_id):
+    sleeps = Sleep.query.filter_by(child_id=baby_id,sleep_complete=False).all()
+    if not sleeps:
+        return jsonify({'message':'No babies are currently sleeping'})
+    output = []
+    for sleep in sleeps:
+        sleep_data = {}
+        sleep_data['id']=sleep.id
+        sleep_data['sleep_type']=sleep.sleep_type
+        sleep_data['start_time']=sleep.start_time
+        output.append(sleep_data)
+    return jsonify({'Sleep Sessions':output})
 
-#Sleep Routes
-# @app.route('/sleep', methods=['POST'])
-# @token_required
-# def new_sleep(current_user_token):
-#     data = request.get_json()
-
-#     new_sleep = Sleep(
-#         sleep_type = data['sleep_type']
-#         start_time =  datetime.datetime.utcnow()
-#         end_time = 
-#         sleep_duration = 
-#         sleep_complete = False
-#         child_id = 
-#     )
-
-#     return jsonify({'message':'baby is sleeping'})
+#end a sleep
+@app.route('/baby/<baby_id>/sleep/<sleep_id>',methods = ['PUT'])
+@token_required
+def end_sleep(current_user_token,baby_id,sleep_id):
+    end_sleep = Sleep.query.filter_by(child_id=baby_id,id=sleep_id).first()
+    if not end_sleep:
+        return jsonify({'message':'There is no baby currently sleeping in this id'})
+    end_sleep.end_time = datetime.utcnow()
+    end_sleep.sleep_complete = True
+    end_sleep.sleep_duration = end_sleep.end_time - end_sleep.start_time
+    print(end_sleep.end_time - end_sleep.start_time)
+    db.session.commit()
+    return jsonify({'message':f'sleep session ended with total time {end_sleep.sleep_duration}'})
