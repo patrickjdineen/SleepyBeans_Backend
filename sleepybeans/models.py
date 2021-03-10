@@ -7,14 +7,14 @@ class User(db.Model):
     last_name = db.Column(db.String(150), nullable = True)
     email_address = db.Column(db.String(200), nullable = False)
     password = db.Column(db.String, nullable = True)
-    child = db.relationship('Baby', backref = 'parent', lazy=True)
+    child = db.relationship('Baby', backref = 'parent', lazy=True, cascade = 'all, delete')
 
 class Baby(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), nullable = False)
     birth_date = db.Column(db.Date, nullable = False)
     parent_id = db.Column(db.String, db.ForeignKey('user.public_id'), nullable=False)
-    sleep = db.relationship('Sleep', backref= "baby", lazy=True)
+    sleep = db.relationship('Sleep', backref= "baby", lazy=True, cascade = 'all, delete')
 
 class Sleep(db.Model):
     id = db.Column(db.Integer, primary_key =True)
