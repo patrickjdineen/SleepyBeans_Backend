@@ -74,7 +74,9 @@ def create_baby(current_user_token):
 def get_all_babies(current_user_token):
     babies = Baby.query.filter_by(parent_id=current_user_token.public_id).all()
     if not babies:
-        return jsonify({'message': 'You currently do not have any babies'})
+        #TODO - fix response to give message as well as pass along empty list.
+        #TODO - list is now empty temporarily to allow react front end to not error out on render.
+        return jsonify([])
     output = []
     for baby in babies:
         baby_data = {}
@@ -149,7 +151,9 @@ def show_current_sleep(current_user_token, baby_id):
     # sleeps = db.session.query(Sleep.id, Sleep.sleep_type, Baby.id,Baby.parent_id).outerjoin(Baby, Sleep.child_id == Baby.id).filter_by(parent_id=current_user_token.id).all()
     sleeps = db.session.query(Sleep.id, Sleep.sleep_type, Sleep.start_time,Sleep.end_time, Sleep.sleep_complete, Sleep.sleep_duration).join(Baby).filter(Sleep.child_id == baby_id , Baby.parent_id == current_user_token.public_id).all()
     if not sleeps:
-        return jsonify({'message':'No babies are currently sleeping'})
+        #TODO - fix response to give message as well as pass along empty list.
+        #TODO - list is now empty temporarily to allow react front end to not error out on render.
+        return jsonify([])
     print(sleeps)
     output = []
     for sleep in sleeps:
@@ -161,6 +165,7 @@ def show_current_sleep(current_user_token, baby_id):
         sleep_data['sleep_complete']=sleep[4]
         sleep_data['sleep_duration']=sleep[5]
         output.append(sleep_data)
+    print(output)
     return  json.dumps(output,indent=4,sort_keys=True,default=str)
 
 #end a sleep
