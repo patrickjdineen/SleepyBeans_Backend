@@ -9,6 +9,10 @@ from sleepybeans.models import User, Baby, Sleep
 from functools import wraps
 from sleepybeans.helpers import token_required
 
+@app.route('/')
+def demo():
+    return '<h1>server is running</h1>'
+
 #signup/create new user
 @app.route('/signup', methods=['POST'])
 def sign_up():
