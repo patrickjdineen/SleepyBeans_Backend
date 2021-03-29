@@ -10,7 +10,7 @@ class User(db.Model):
     child = db.relationship('Baby', backref = 'parent', lazy=True, cascade = 'all, delete')
 
 class Baby(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.String, primary_key = True)
     name = db.Column(db.String(100), nullable = False)
     birth_date = db.Column(db.Date, nullable = False)
     parent_id = db.Column(db.String, db.ForeignKey('user.public_id'), nullable=False)
